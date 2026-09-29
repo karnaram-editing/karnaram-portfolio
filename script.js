@@ -26,6 +26,25 @@ async function loadPortfolio() {
   }
 }
 
+function getVideoRatio(filename) {
+  const name = String(filename || "").toLowerCase();
+
+  if (name.includes("_9x16")) {
+    return "vertical";
+  }
+
+  if (name.includes("_16x9")) {
+    return "landscape";
+  }
+
+  if (name.includes("_1x1")) {
+    return "square";
+  }
+
+  // Default
+  return "landscape";
+}
+
 function renderProjects(projects) {
   grid.innerHTML = "";
 
@@ -38,11 +57,14 @@ function renderProjects(projects) {
   statusEl.textContent = `${projects.length} projects`;
 
   projects.forEach((project, index) => {
+
     const card = document.createElement("article");
     card.className = "card";
 
+    const ratioClass = getVideoRatio(project.name);
+
     card.innerHTML = `
-      <div class="media">
+      <div class="media ${ratioClass}">
         <iframe
           src="${escapeAttr(project.videoUrl)}"
           title="${escapeAttr(project.title)}"
@@ -54,7 +76,12 @@ function renderProjects(projects) {
 
       <div class="card-body">
         <div class="card-title">
-          ${escapeHtml(project.title)}
+          ${escapeHtml(
+            project.title
+              .replace(/_9x16/gi, "")
+              .replace(/_16x9/gi, "")
+              .replace(/_1x1/gi, "")
+          )}
         </div>
 
         <div class="card-cat">
