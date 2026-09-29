@@ -37,42 +37,20 @@ function renderProjects(projects) {
 
   statusEl.textContent = `${projects.length} projects`;
 
-  projects.forEach((project) => {
+  projects.forEach((project, index) => {
     const card = document.createElement("article");
     card.className = "card";
-
-    const directVideoUrl =
-      `https://drive.google.com/uc?export=download&id=${encodeURIComponent(project.id)}`;
 
     card.innerHTML = `
       <div class="media">
 
-        <video
-          class="portfolio-video"
-          controls
-          playsinline
-          webkit-playsinline
-          preload="metadata"
-          src="${escapeAttr(directVideoUrl)}"
-          title="${escapeAttr(project.title)}">
-        </video>
-
-        <div class="video-fallback" hidden>
-          <iframe
-            src="${escapeAttr(project.videoUrl)}"
-            title="${escapeAttr(project.title)}"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowfullscreen>
-          </iframe>
-
-          <a
-            class="open-video"
-            href="${escapeAttr(project.videoUrl)}"
-            target="_blank"
-            rel="noopener">
-            Open video ↗
-          </a>
-        </div>
+        <iframe
+          src="${escapeAttr(project.videoUrl)}"
+          title="${escapeAttr(project.title)}"
+          loading="${index < 2 ? "eager" : "lazy"}"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen>
+        </iframe>
 
       </div>
 
@@ -90,14 +68,6 @@ function renderProjects(projects) {
     `;
 
     grid.appendChild(card);
-
-    const video = card.querySelector(".portfolio-video");
-    const fallback = card.querySelector(".video-fallback");
-
-    video.addEventListener("error", () => {
-      video.hidden = true;
-      fallback.hidden = false;
-    });
   });
 }
 
