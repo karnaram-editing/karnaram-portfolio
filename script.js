@@ -43,7 +43,6 @@ function renderProjects(projects) {
 
     card.innerHTML = `
       <div class="media">
-
         <iframe
           src="${escapeAttr(project.videoUrl)}"
           title="${escapeAttr(project.title)}"
@@ -51,7 +50,6 @@ function renderProjects(projects) {
           allow="autoplay; fullscreen; picture-in-picture"
           allowfullscreen>
         </iframe>
-
       </div>
 
       <div class="card-body">
