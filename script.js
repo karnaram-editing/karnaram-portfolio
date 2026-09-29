@@ -4,6 +4,28 @@ const grid = document.getElementById("projects");
 const statusEl = document.getElementById("status");
 const emptyEl = document.getElementById("empty");
 
+async function loadPortfolio() {
+  try {
+    statusEl.textContent = "Loading work…";
+
+    const response = await fetch(`${API_URL}?v=${Date.now()}`);
+
+    if (!response.ok) {
+      throw new Error("API request failed");
+    }
+
+    const projects = await response.json();
+
+    renderProjects(projects);
+
+  } catch (error) {
+    console.error("Portfolio API error:", error);
+
+    statusEl.textContent = "Could not load projects";
+    emptyEl.hidden = false;
+  }
+}
+
 function renderProjects(projects) {
   grid.innerHTML = "";
 
@@ -19,12 +41,12 @@ function renderProjects(projects) {
     const card = document.createElement("article");
     card.className = "card";
 
-    // Google Drive direct video URL
     const directVideoUrl =
       `https://drive.google.com/uc?export=download&id=${encodeURIComponent(project.id)}`;
 
     card.innerHTML = `
       <div class="media">
+
         <video
           class="portfolio-video"
           controls
@@ -51,6 +73,7 @@ function renderProjects(projects) {
             Open video ↗
           </a>
         </div>
+
       </div>
 
       <div class="card-body">
@@ -71,40 +94,11 @@ function renderProjects(projects) {
     const video = card.querySelector(".portfolio-video");
     const fallback = card.querySelector(".video-fallback");
 
-    // If direct video doesn't work, use Google Drive preview
     video.addEventListener("error", () => {
       video.hidden = true;
       fallback.hidden = false;
     });
   });
-}
-
-function loadPortfolio() {
-  const callbackName = "__karnaramPortfolio_" + Date.now();
-
-  window[callbackName] = function(data) {
-    try {
-      renderProjects(data);
-    } finally {
-      delete window[callbackName];
-      script.remove();
-    }
-  };
-
-  const script = document.createElement("script");
-
-  script.src =
-    `${API_URL}?callback=${callbackName}&v=${Date.now()}`;
-
-  script.onerror = () => {
-    statusEl.textContent = "Could not load projects";
-    emptyEl.hidden = false;
-
-    delete window[callbackName];
-    script.remove();
-  };
-
-  document.body.appendChild(script);
 }
 
 function escapeHtml(value) {
